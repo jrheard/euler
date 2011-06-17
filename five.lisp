@@ -21,16 +21,16 @@
 					  (f (/ n factor) (cons factor factors))))))
 		   (f num '())))
 
-(defun factors-and-powers (num)
-  (labels ((f (facts alist)
-			 (if facts
+(defun occurrences-list-to-counts-hash (occurrences)
+  (labels ((f (lst hash)
+			 (if lst
 				 (progn
-				   (if (assoc (car facts) alist) ; TODO is there a better way to express this?
-					   (incf (cdr (assoc (car facts) alist))) ; TODO this feels gross
-					   (push (cons (car facts) 1) alist))
-					   (f (cdr facts) alist))
-				 alist)))
-		  (f (factors num) '())))
+				   (if (gethash (car lst) hash)
+					   (incf (gethash (car lst) hash))
+					   (setf (gethash (car lst) hash) 1))
+				   (f (cdr lst) hash)))
+				 hash))
+		  (f occurrences (make-hash-table))))
 
 (defparameter *divisors* (loop for i from 1 to 20 collect i))
 
