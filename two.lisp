@@ -11,6 +11,14 @@
 				 (f (1+ idx) t2 (+ t1 t2)))))
 		  (f 1 0 1)))
 
+; tamir's version - way more elegant, but doesn't seem to optimize out
+(defun tfib (index)
+  (labels ((f (idx acc)
+			 (cond ((eq idx 0) acc)
+				   ((eq idx 1) (1+ acc))
+				   (t (f (- idx 1) (f (- idx 2) acc))))))
+		  (f index 0)))
+
 (princ
   (loop for i from 1
 	   for term = (fib i)
