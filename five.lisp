@@ -9,14 +9,14 @@
 			do (setf divisible nil))
 	   divisible))
 
-(defparameter *divisors* (loop for i from 1 to 20 collect i))
-
-(loop
-	 while (not (eq (length (remove-duplicates *divisors*)) 1))
-	 do (let* ((smallest (apply #'min *divisors*))
-			   (index (position smallest *divisors*)))
-			  (setf (nth index *divisors*)
-						 (+ smallest (1+ index)))))
-
-(print (first *divisors*))
-(print (divisible-by-1-to-20p (first *divisors*)))
+(defun factors (num)
+  (labels ((find-factor (n cur)
+					   (if (zerop (mod n cur))
+						 cur
+						 (find-factor n (1+ cur))))
+		   (f (n factors)
+			 (if (eq n 1)
+				 factors
+				 (let ((factor (find-factor n 2)))
+					  (f (/ n factor) (cons factor factors))))))
+		   (f num '())))
