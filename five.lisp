@@ -21,6 +21,8 @@
 					  (f (/ n factor) (cons factor factors))))))
 		   (f num '())))
 
+; TODO it'd be fun to write a macro approximating defaultdict behavior
+
 (defun occurrences-list-to-counts-hash (occurrences)
   (labels ((f (lst hash)
 			 (if lst
@@ -32,6 +34,21 @@
 				 hash))
 		  (f occurrences (make-hash-table))))
 
-(defparameter *divisors* (loop for i from 1 to 20 collect i))
+(defparameter *factors* (make-hash-table))
 
-; TODO implement the algorithm that actually solves the question that this problem asks
+(loop for i from 1 to 20
+	 for cur-facts = (occurrences-list-to-counts-hash (factors i))
+	 do (loop for key being the hash-keys of cur-facts
+			 do (progn
+				  (if (gethash key *factors*)
+					  (setf (gethash key *factors*) (max (gethash key *factors*) (gethash key cur-facts)))
+					  (setf (gethash key *factors*) (gethash key cur-facts))))))
+
+(defparameter *lcm* 1)
+
+(loop for key being the hash-keys of *factors*
+	 using (hash-value value)
+	 do (loop for i from 1 to value
+			 do (setf *lcm* (* *lcm* key))))
+
+(print *lcm*)
