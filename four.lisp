@@ -12,3 +12,5 @@
 
 (defmethod palindromep ((num number))
   (palindromep (write-to-string num)))
+
+(print (loop for i from 500 to 999 collect (loop for j from 500 to 999 when (palindromep (* i j)) collect (cons i j))))
