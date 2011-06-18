@@ -16,3 +16,5 @@
 						  (f (1+ cur) primes))
 					  primes)))
 				(f 2 '()))))
+
+(print (nth 10000 (reverse (all-primes-less-than 150000))))
