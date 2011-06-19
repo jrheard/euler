@@ -5,11 +5,11 @@
 (defun product-of-digits (str)
   (reduce #'* (loop for i from 1 until (> i (length str)) collect (parse-integer str :start (- i 1) :end i))))
 
-(defun chunks-of-five (str)
-  (labels ((f (strng chunks)
-		   (if (> (length strng) 4)
-			 (f (subseq strng 1) (cons (subseq strng 0 5) chunks))
-			 chunks)))
-		  (f str '())))
+(defun map-contiguous (num fun seq)
+  (labels ((f (sub lst)
+		   (if (>= (length sub) num)
+			 (f (subseq sub 1) (cons (funcall fun (subseq sub 0 num)) lst))
+			 lst)))
+		  (f seq '())))
 
-(print (reduce #'max (mapcar #'product-of-digits (chunks-of-five *num-str*))))
+(print (reduce #'max (map-contiguous 5 #'product-of-digits *num-str*)))
