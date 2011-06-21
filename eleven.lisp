@@ -23,21 +23,34 @@
 	  (20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54)
 	  (01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48)))
 
+(defparameter *radius* 4)
+
 (defun cartesian (a b)
   (labels ((f (aa)
 			 (mapcar (lambda (bb) (list aa bb)) b)))
 		  (mapcan #'f a)))
 
-(defun neighbor-lines (x y radius grid)
+(defun neighbor-lines (x y)
   (let ((directions (set-difference (cartesian '(-1 0 1) '(-1 0 1)) '((0 0)) :test #'equal)))
 	   (labels ((f (direction)
 				  (when (and
-						  (>= (+ (* (car direction) radius) x) 0)
-						  (>= (+ (* (cadr direction) radius) y) 0)
-						  (< (+ (* (car direction) radius) x) (length grid))
-						  (< (+ (* (cadr direction) radius) y) (length (car grid))))
-						(loop for i from 0 to (1- radius)
-							 for xx = (* (car direction) (+ x i))
-							 for yy = (* (cadr direction) (+ y i))
-							 collect (nth yy (nth xx grid))))))
+						  (>= (+ (* (car direction) *radius*) x) 0)
+						  (>= (+ (* (cadr direction) *radius*) y) 0)
+						  (< (+ (* (car direction) *radius*) x) (length *grid*))
+						  (< (+ (* (cadr direction) *radius*) y) (length (car *grid*))))
+						(loop for i from 0 to (1- *radius*)
+							 for xx = (+ (* (car direction) i) x)
+							 for yy = (+ (* (cadr direction) i) y)
+							 collect (nth yy (nth xx *grid*))))))
 				(remove-if #'null (mapcar #'f directions)))))
+
+(defparameter *points* (cartesian
+						 (loop for i from 0 to (1- (length *grid*)) collect i)
+						 (loop for i from 0 to (1- (length (car *grid*))) collect i)))
+
+(print (reduce #'max
+			   (mapcar
+				   (lambda (lst) (reduce #'* lst))
+				   (mapcan
+					   (lambda (point) (apply #'neighbor-lines point))
+					 *points*))))
