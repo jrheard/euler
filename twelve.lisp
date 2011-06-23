@@ -1,0 +1,6 @@
+(let ((seen (make-hash-table)))
+	 (setf (gethash 0 seen) 0)
+	 (defun triangle-num (index)
+		   (or (gethash index seen)
+			   (setf (gethash index seen)
+					 (+ index (gethash (1- index) seen))))))
