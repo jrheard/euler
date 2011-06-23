@@ -1,6 +1,21 @@
 (let ((seen (make-hash-table)))
-	 (setf (gethash 0 seen) 0)
-	 (defun triangle-num (index)
-		   (or (gethash index seen)
-			   (setf (gethash index seen)
-					 (+ index (gethash (1- index) seen))))))
+	 (defun divisors (num)
+	   (labels ((f (divisor divs)
+				  (if (<= divisor 1)
+					  (append divs '(1))
+					  (if (eq (mod num divisor) 0)
+						  (let ((val (gethash divisor seen)))
+								(if val
+									(append val divs)
+									(f (1- divisor) (cons divisor divs))))
+						  (f (1- divisor) divs)))))
+			   (setf (gethash num seen) (f (1- num) (list num))))))
+
+(defun first-triangle-number-with-over-num-divisors (num)
+  (labels ((f (triangle i)
+			 (if (> (length (divisors triangle)) num)
+				 triangle
+				 (f (+ triangle i) (1+ i)))))
+		  (f 1 2)))
+
+(print (first-triangle-number-with-over-num-divisors 10))
