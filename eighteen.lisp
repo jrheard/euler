@@ -13,9 +13,9 @@
   ; there must be a more efficient way to do this
   (labels ((f (i acc)
 			 (if (<= (1+ node) acc)
-				 (1- i) ; "level in the tree" is indexed from 0
+				 (- i 2) ; "level in the tree" is indexed from 0
 				 (f (1+ i) (+ acc i)))))
-		  (f 1 1)))
+		  (f 1 0)))
 
 (defun left (tree node)
   (+ (1+ node) (level node)))
@@ -36,6 +36,6 @@
 
 (compile 'paths)
 
-;(time (print (reduce #'max (mapcar (lambda (lst) (reduce #'+ lst)) (paths *tree*)))))
-(print (length (paths *tree*)))
-;(print (paths *tree*))
+(time (print (reduce #'max (mapcar (lambda (lst) (reduce #'+ lst)) (paths *tree*)))))
+
+; TODO for the harder version of this problem (#67), thoughts so far are to start at the bottom of the graph and try to somehow group/bubble up sums from there
