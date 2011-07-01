@@ -23,16 +23,17 @@
 (defun right (tree node)
   (+ (1+ node) (level node) 1))
 
-(defun max-tree-path (tree)
-  (let ((maximum 0))
+(defun paths (tree)
+  (let ((paths '()))
 	   (labels ((f (node acc)
-				  (when (> acc maximum) (setf maximum acc))
-				  (when (< node (length tree))
-						(f (left tree node) (+ acc (aref-safe tree (left tree node))))
-						(f (right tree node) (+ acc (aref-safe tree (right tree node)))))))
-			   (f 0 0))
-	   maximum))
+				  (if (and (<= (left tree node) (length tree)) (<= (right tree node) (length tree)))
+					  (progn
+						(f (left tree node) (cons (aref-safe tree (left tree node)) acc))
+						(f (right tree node) (cons (aref-safe tree (right tree node)) acc)))
+					  (push acc paths))))
+			   (f 0 (list (aref tree 0))))
+	   paths))
 
-(compile 'max-tree-path)
+(compile 'paths)
 
-(time (print (max-tree-path *tree*)))
+(time (print (reduce #'max (mapcar (lambda (lst) (reduce #'+ lst)) (paths *tree*)))))
