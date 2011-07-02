@@ -17,25 +17,36 @@
 				 (f (1+ i) (+ acc i)))))
 		  (f 1 0)))
 
-(defun left (tree node)
-  (+ (1+ node) (level node)))
+(defun level-start (level)
+  (reduce #'+ (loop for i from 1 to level collect i)))
 
-(defun right (tree node)
-  (+ (1+ node) (level node) 1))
+(defun level-end (level)
+  (1- (level-start (1+ level))))
 
-(defun paths (tree)
-  (let ((paths '()))
-	   (labels ((f (node acc)
-				  (if (and (< (left tree node) (length tree)) (< (right tree node) (length tree)))
-					  (progn
-						(f (left tree node) (cons (aref tree (left tree node)) acc))
-						(f (right tree node) (cons (aref tree (right tree node)) acc)))
-					  (push (reverse acc) paths))))
-			   (f 0 (list (aref tree 0))))
-	   paths))
+(defun right-parent (node)
+  (let ((lev (level node)))
+  (if (eq node (level-end lev))
+	  nil
+	  (- node (- (level-end lev) (level-start lev))))))
 
-(compile 'paths)
+(defun left-parent (ndoe)
+  (let ((lev (level node)))
+	   (if (eq node (level-start lev))
+		   nil
+		   (- node (- (level-end lev) (level-start lev) 1)))))
 
-(time (print (reduce #'max (mapcar (lambda (lst) (reduce #'+ lst)) (paths *tree*)))))
+(defun max-path-sum (tree) ; destructive to tree :/
+  (labels ((f (level)
+			 (if (eq level 0)
+				 (aref tree 0)
+				 (progn
+				   (loop for i
+						from (level-start level)
+						to (1- (level-end level))
+						do (let ((parent (right-parent i)))
+								(setf (aref tree parent)
+									  (+ (aref tree parent) (max (aref tree i) (aref tree (1+ i)))))))
+				   (f (1- level))))))
+		  (f (level (1- (length tree))))))
 
-; TODO for the harder version of this problem (#67), thoughts so far are to start at the bottom of the graph and try to somehow group/bubble up sums from there
+(time (print (max-path-sum *tree*)))
