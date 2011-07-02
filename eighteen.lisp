@@ -1,12 +1,7 @@
-(load "/Users/jrheard/quicklisp/setup.lisp")
-(ql:quickload "split-sequence")
+(load "common.lisp")
 
 (defun read-tree (filename)
-  (let ((seq
-		  (reduce #'append
-				  (with-open-file (infile filename :direction :input)
-					(loop for line = (read-line infile nil)
-					   while line collect (mapcar #'read-from-string (split-sequence:split-sequence #\Space line)))))))
+  (let ((seq (seq-from-file filename #\space)))
 	   (make-array (length seq) :initial-contents seq)))
 
 (defparameter *tree* (read-tree "eighteen_tree.txt"))
