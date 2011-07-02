@@ -2,17 +2,17 @@
 (ql:quickload "split-sequence")
 
 (defun read-tree (filename)
-	(let ((seq
-			(reduce #'append
-					(with-open-file (infile filename :direction :input)
-					  (loop for line = (read-line infile nil)
-						   while line collect (mapcar #'read-from-string (split-sequence:split-sequence #\Space line)))))))
-		 (make-array (length seq) :initial-contents seq)))
+  (let ((seq
+		  (reduce #'append
+				  (with-open-file (infile filename :direction :input)
+					(loop for line = (read-line infile nil)
+					   while line collect (mapcar #'read-from-string (split-sequence:split-sequence #\Space line)))))))
+	   (make-array (length seq) :initial-contents seq)))
 
 (defparameter *tree* (read-tree "eighteen_tree.txt"))
 
 (defun level (node)
-  ; there must be a more efficient way to do this
+										; there must be a more efficient way to do this
   (labels ((f (i acc)
 			 (if (<= (1+ node) acc)
 				 (- i 2) ; "level in the tree" is indexed from 0
@@ -27,9 +27,9 @@
 
 (defun right-parent (node)
   (let ((lev (level node)))
-  (if (eq node (level-end lev))
-	  nil
-	  (- node (- (level-end lev) (level-start lev))))))
+	   (if (eq node (level-end lev))
+		   nil
+		   (- node (- (level-end lev) (level-start lev))))))
 
 (defun left-parent (ndoe)
   (let ((lev (level node)))
@@ -38,17 +38,20 @@
 		   (- node (- (level-end lev) (level-start lev) 1)))))
 
 (defun max-path-sum (tree) ; destructive to tree :/
-  (labels ((f (level)
-			 (if (eq level 0)
-				 (aref tree 0)
-				 (progn
-				   (loop for i
-						from (level-start level)
-						to (1- (level-end level))
-						do (let ((parent (right-parent i)))
-								(setf (aref tree parent)
-									  (+ (aref tree parent) (max (aref tree i) (aref tree (1+ i)))))))
-				   (f (1- level))))))
-		  (f (level (1- (length tree))))))
+  (let ((tree (copy-seq tree)))
+	   (labels ((f (level)
+				  (if (eq level 0)
+					  (aref tree 0)
+					  (progn
+						(loop for i
+							 from (level-start level)
+							 to (1- (level-end level))
+						   do (let ((parent (right-parent i)))
+								   (setf (aref tree parent)
+										 (+ (aref tree parent) (max (aref tree i) (aref tree (1+ i)))))))
+						(f (1- level))))))
+			   (f (level (1- (length tree)))))))
 
 (time (print (max-path-sum *tree*)))
+
+(print *tree*)
