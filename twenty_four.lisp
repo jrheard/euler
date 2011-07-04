@@ -1,0 +1,26 @@
+(defun lexicographic-permutations (digits)
+  (let ((permutations '()))
+	   (labels ((f (digits start end acc)
+				  (fresh-line)
+				  (format t "~a ~a-~a ~a" digits start end acc)
+				  (if (null digits)
+					  (when (not (member nil (coerce acc 'list)))
+							(fresh-line)
+							(format t "~a-~a pushing ~a on ~a" start end acc permutations)
+							(push acc permutations))
+					  (when (not (eq start end))
+							(loop for i from start to end
+							   for arr = (copy-seq acc)
+								 when (null (aref arr i))
+							   do (progn
+									(fresh-line)
+									(format t "about to morph ~a" arr)
+									(setf (aref arr i) (car digits))
+									(fresh-line)
+									(format t "~a spawning ~a-~a, ~a-~a" arr start i i end)
+									(when (member nil (coerce arr 'list))
+										  (f (cdr digits) start i arr)) ; if arr's full, only spawn one recursive call instead of two, so that it doesn't get double-counted in permutations
+									(f (cdr digits) i end arr)))))))
+			   (f digits 0 (1- (length digits)) (make-array (length digits))))
+	   permutations))
+
