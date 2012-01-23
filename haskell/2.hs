@@ -2,10 +2,6 @@
 -- 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...
 -- By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms.
 
-fib :: (Ord a, Num a) => a -> a
-fib x
-    | x <= 1 = 1
-    | x == 2 = 2
-    | otherwise = fib (x - 1) + fib (x - 2)
+fibonacci = 1 : 1 : [a + b | (a, b) <- zip fibonacci (tail fibonacci)]
 
-main = print (sum [x | x <- takeWhile (< 4000000) [x | x <- [1..]], even x])
+main = print (sum (takeWhile (< 4000000) [x | x <- fibonacci, even x]))
