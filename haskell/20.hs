@@ -2,4 +2,7 @@
 
 import Data.Char
 
-main = print $ sum $ map digitToInt $ show $ product [1..100]
+fact :: Integer -> Integer
+fact x = product [1..x]
+
+main = print $ sum $ map digitToInt $ show $ fact 100
