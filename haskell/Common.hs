@@ -9,7 +9,7 @@ import Data.List.Ordered (minus)
 primesTo :: (Ord a, Num a, Enum a) => a -> [a]
 primesTo n = 2 : eratos [3,5..n] where
     eratos [] = []
-    eratos (x:xs) = x : eratos (xs `minus` [x, x+2*x..n])
+    eratos (x:xs) = x : eratos (xs `minus` [x*x, x*x+2*x..n])
 
 smallPrimes = primesTo 10000
 
