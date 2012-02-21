@@ -31,4 +31,12 @@ parsedGrid :: [[Integer]]
 parsedGrid = map (\x -> map (\y -> (read y) :: Integer) x) stringGrid
 
 numsInARow :: [[Integer]] -> Direction -> Int -> Int -> Int -> [Integer]
-numsInARow grid (Direction deltaX deltaY) x y howMany = [(grid !! yy) !! xx | i <- [0..howMany-1], let xx = x + (deltaX * i), let yy = y + (deltaY * i), xx >= 0, yy >= 0, xx <= length (grid !! 0), yy <= length grid]
+numsInARow grid (Direction deltaX deltaY) x y howMany = [(grid !! yy) !! xx | i <- [0..howMany-1], let xx = x + (deltaX * i), let yy = y + (deltaY * i), xx >= 0, yy >= 0, xx < length (grid !! 0), yy < length grid]
+
+adjacents :: [[Integer]] -> Int -> [[Integer]]
+adjacents grid howMany = filter (\x -> (length x) == howMany) [numsInARow grid direction x y howMany |
+    direction <- [southwest, south, southeast, east],
+    x <- [0..(length (grid !! 0))],
+    y <- [0..(length grid)]]
+
+main = print $ maximum $ map product (adjacents parsedGrid 4)
