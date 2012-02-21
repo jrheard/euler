@@ -21,21 +21,14 @@ stringGrid = map splitWs $ split "\n" "08 02 22 97 38 15 00 40 00 75 04 05 07 78
 \20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54\n\
 \01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48"
 
-data Direction = Southwest | South | Southeast | East
+data Direction = Direction Int Int
+southwest = Direction (-1) 1
+south = Direction 0 1
+southeast = Direction 1 1
+east = Direction 1 0
 
 parsedGrid :: [[Integer]]
 parsedGrid = map (\x -> map (\y -> (read y) :: Integer) x) stringGrid
 
 numsInARow :: [[Integer]] -> Direction -> Int -> Int -> Int -> [Integer]
-numsInARow grid dir x y howMany = [(grid !! yy) !! xx | i <- [0..howMany-1], let xx = x + (deltaX * i), let yy = y + (deltaY * i), xx >= 0, yy >= 0]
-    where deltaX = case dir of  Southwest -> (-1)
-                                South -> 0
-                                Southeast -> 1
-                                East -> 1
-          deltaY = case dir of  Southwest -> 1
-                                South -> 1
-                                Southeast -> 1
-                                East -> 0
-
-adjacents :: [[Integer]] -> Int -> [Integer]
-adjacents grid num = 
+numsInARow grid (Direction deltaX deltaY) x y howMany = [(grid !! yy) !! xx | i <- [0..howMany-1], let xx = x + (deltaX * i), let yy = y + (deltaY * i), xx >= 0, yy >= 0, xx <= length (grid !! 0), yy <= length grid]
