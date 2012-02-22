@@ -15,4 +15,4 @@ chain x
             | even n = n `div` 2
             | odd n = 3*n + 1
 
-main = print $ foldl1 (\acc x -> if (length (chain x)) > (length (chain acc)) then x else acc) [1..999999]
+main = print $ foldl1 (\acc x -> if (length (chain x)) > (length (chain acc)) then x else acc) [500001,500003..999999]
