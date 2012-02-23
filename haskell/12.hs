@@ -11,7 +11,11 @@
 -- We can see that 28 is the first triangle number to have over five divisors.
 -- What is the value of the first triangle number to have over five hundred divisors?
 
+import Data.List (find)
+
 divisors :: Integer -> [Integer]
 divisors x = [y | y <- [1..x], x `mod` y == 0]
 
-triangles = [sum $ take n [1..] | n <- [1..]]
+triangles = [sum [1..i] | i <- [1..]]
+
+main = print $ find (\x -> (length (divisors x)) > 50) triangles
