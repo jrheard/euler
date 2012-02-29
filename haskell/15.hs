@@ -4,21 +4,23 @@
 import Data.List (delete, nub, permutations)
 
 
-data Direction = D | R
+data Direction = D | R deriving (Eq, Show)
 
 
 routes :: Int -> Int -> [[Int]]
 routes x y = nub $ permutations $ concat [(take x (repeat 0)), (take y (repeat 1))]
 
+routesLeft :: [Direction] -> [[Direction]]
+routesLeft remaining
+    | D `elem` remaining && R `elem` remaining = concat [downBranch, rightBranch]
+    | D `elem` remaining = downBranch
+    | R `elem` remaining = rightBranch
+    | otherwise = [[]]
+    where downBranch = [D:route | route <- routesLeft (delete D remaining)]
+          rightBranch = [R:route | route <- routesLeft (delete R remaining)]
+
 routes' :: Int -> Int -> [[Direction]]
-routes' x y = routes' initialDirections where
-    routes' remaining
-        | D `elem` remaining && R `elem` remaining = [downBranch, rightBranch]
-        | D `elem` remaining = downBranch -- the issue here is that some branches are returning [Direction]s but others are returning [[Direction]]s.
-        | R `elem` remaining = rightBranch
-        | otherwise = []
-        where downBranch = D : (concat $ routes' (delete D remaining))
-              rightBranch = R : (concat $ routes' (delete R remaining))
+routes' x y = routesLeft initialDirections where
     initialDirections = concat [(take x (repeat R)), (take y (repeat D))]
 
-main = print $ length (routes 2 2)
+main = print $ length (routes' 20 20)
