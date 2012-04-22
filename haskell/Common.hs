@@ -2,6 +2,7 @@ module Common
 ( primesTo
 , leastFactor
 , primeFactors
+, fibonacci
 ) where
 
 import Data.List.Ordered (minus)
@@ -23,3 +24,4 @@ primeFactors x = (takeWhile (<=x) (facts x [])) where
     facts 1 (y:ys) = y:ys
     facts m lst = facts (m `div` (leastFactor m)) ((leastFactor m):lst)
 
+fibonacci = 1 : 1 : [a + b | (a, b) <- zip fibonacci (tail fibonacci)]
