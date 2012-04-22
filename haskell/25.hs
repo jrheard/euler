@@ -9,6 +9,6 @@ firstFibTermWithNumDigits numDigits = case maybeTerm of
     Just term -> term + 1
     Nothing -> -1
     where
-        maybeTerm = findIndex (\x -> length (show x) >= 1000) fibonacci
+        maybeTerm = findIndex (\x -> length (show x) >= numDigits) fibonacci
 
 main = print $ firstFibTermWithNumDigits 1000
