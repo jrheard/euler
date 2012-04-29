@@ -10,20 +10,21 @@ singleton x = Node x EmptyTree EmptyTree
 
 treeLength :: Tree a -> Int
 treeLength EmptyTree = 0
-treeLength (Node a left right) = 1 + (treeLength left) + (treeLength right)
+treeLength (Node _ left right) = 1 + (rightBranchLength right) + treeLength left
+    where rightBranchLength EmptyTree = 0
+          rightBranchLength (Node _ left right) = 1 + rightBranchLength right
 
 treeAppend :: a -> Tree a -> Tree a
 treeAppend x EmptyTree = Node x EmptyTree EmptyTree
 treeAppend x tree = treeInsertAt x (treeLength tree) tree
 
 treeLevelThresholds :: [Int]
-treeLevelThresholds = 0 : zipWith (+) treeLevelThresholds [1..] -- [0,1,3,6,10,15...]
+treeLevelThresholds = 1 : zipWith (+) treeLevelThresholds [2..] -- [1,3,6,10,15...]
 
-treeLevel :: Int -> Int
-treeLevel 0 = 0
-treeLevel len = case (findIndex (\threshold -> threshold > len) treeLevelThresholds) of
-    Just level -> level - 1
-    Nothing -> 0
+treeLevel :: Tree a -> Int
+treeLevel EmptyTree = 0
+treeLevel (Node _ EmptyTree EmptyTree) = 0
+treeLevel (Node _ left _) = 1 + treeLevel left
 
 treeInsertAt :: a -> Int -> Tree a -> Tree a
 treeInsertAt x _ EmptyTree = singleton x
@@ -32,14 +33,13 @@ treeInsertAt x pos (Node a left right)
     | pos == 2 = Node a left (singleton x)
     | pos == 4 = Node a (treeInsertAt x 2 left) (treeInsertAt x 1 right)
     | destinationOffset < (numNodesInDestinationLevel `quot` 2) = Node a (treeInsertAt x (pos - destinationLevel) left) right
-    | otherwise = Node a left (treeInsertAt x (pos - destinationLevel - 1) right)
-    where destinationLevel = treeLevel $ treeLength (Node a left right)
-          destinationOffset = pos - (treeLevelThresholds !! destinationLevel)
-          numNodesInDestinationLevel = (treeLevelThresholds !! (destinationLevel + 1)) - (treeLevelThresholds !! destinationLevel)
+    | otherwise = Node a left (treeInsertAt x (pos - destinationLevel) right)
+    where level = treeLevel (Node a left right)
+          destinationLevel
+              | treeLength (Node a left right) == (treeLevelThresholds !! level) = level + 1
+              | otherwise = level
+          destinationOffset = pos - (treeLevelThresholds !! (destinationLevel - 1))
+          numNodesInDestinationLevel = (treeLevelThresholds !! (destinationLevel)) - (treeLevelThresholds !! (destinationLevel - 1))
 
 makeTree :: [a] -> Tree a
 makeTree treeSpec = foldl (\acc x -> treeAppend x acc) EmptyTree treeSpec
-
-
-
-main = print "hi"
